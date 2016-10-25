@@ -1,0 +1,25 @@
+{
+  "name": "node.iterator.micro",
+  "version": "1.0.0",
+  "description": "node command line iterator - reads the contents of actions.txt line-per-line and performs an http.get command on each of them. if the action line starts with a # / sharp sign then it will be ignored. the application fetches the contents of the actions.txt file every second so if a new action is detected it will be ran immediately. minimum sleep time per action is 1 second.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "utility",
+    "iterator",
+    "http"
+  ],
+  "author": "darkcolonist@gmail.com",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darkcolonist/node.iterator.micro.git"
+  },
+  "bugs": {
+    "url": "https://github.com/darkcolonist/node.iterator.micro/issues"
+  },
+  "homepage": "https://github.com/darkcolonist/node.iterator.micro#readme"
+}
