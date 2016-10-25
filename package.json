@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/darkcolonist/node.iterator.micro/issues"
   },
-  "homepage": "https://github.com/darkcolonist/node.iterator.micro#readme"
+  "homepage": "https://github.com/darkcolonist/node.iterator.micro#readme",
+  "dependencies": {
+    "moment-timezone": "^0.5.7",
+    "request": "^2.75.0",
+    "speakingurl": "^10.0.0"
+  }
 }
