@@ -27,9 +27,6 @@
     "request": "^2.75.0",
     "speakingurl": "^10.0.0"
   },
-  /**
-   * this is for pm2
-   */
   "apps": {
     "name": "node.iterator.micro",
     "script": "./server.js",
