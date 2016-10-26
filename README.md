@@ -1,5 +1,5 @@
 # node.iterator.micro
-node command line iterator
+Node Command Line Iterator is useful for applications that rely on applications to consistently call specific urls that need to be triggered less than a minute (CRON). Due to CRON's limitation of running per minute when running minutely `wget` or `curl` commands, sometimes we need something quicker ie., every second.
 ## configuration
 populate the actions.txt file with urls
 ```
