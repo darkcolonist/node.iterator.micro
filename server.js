@@ -14,7 +14,7 @@ var util = require('./lib/util')
  * set this to -1 for unlimited iterations
  * @type {Number}
  */
-var iterations = 5
+var iterations = -1
 var counter    = 0
 
 /**
@@ -32,23 +32,27 @@ var iterator = setInterval(function(){
 
   var actions = util.loadActions()
 
-  for(var aIndex in actions){
-    var action = actions[aIndex]
+  if(actions.length > 0){
+    for(var aIndex in actions){
+      var action = actions[aIndex]
 
-    // util.log(["calling", action.name, action.url])
-    
-    var runningIndex = running.indexOf(action.name)
+      // util.log(["calling", action.name, action.url])
+      
+      var runningIndex = running.indexOf(action.name)
 
-    if(runningIndex === -1){
-      util.log(["call", action.name])
-      running.push(action.name)
-      util.curl(action, function(curledAction){
-        util.log(["done", curledAction.name])
-        running.splice(running.indexOf(curledAction.name), 1)
-      })
-    }else{
-      util.log(["skip", action.name])
+      if(runningIndex === -1){
+        util.log(["call", action.name])
+        running.push(action.name)
+        util.curl(action, function(curledAction){
+          util.log(["done", curledAction.name, curledAction.duration + "ms"])
+          running.splice(running.indexOf(curledAction.name), 1)
+        })
+      }else{
+        util.log(["skip", action.name])
+      }
     }
+  }else{
+    util.log("no actions")
   }
 
 }, 1000)
