@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/darkcolonist/node.iterator.micro#readme",
   "dependencies": {
+    "express": "^4.15.4",
     "moment-timezone": "^0.5.7",
     "request": "^2.75.0",
     "speakingurl": "^10.0.0"

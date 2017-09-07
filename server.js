@@ -5,6 +5,8 @@
 // http://dev.test/curlable.php?client=jupiter
 // http://dev.test/curlable.php?client=chronus
 
+var express = require('express')
+const app = express()
 var util = require('./lib/util')
 
 // suppress output to text file
@@ -56,3 +58,9 @@ var iterator = setInterval(function(){
   }
 
 }, 1000)
+
+app.get('/', (request, response) => {  
+  response.send(running);
+})
+
+app.listen(3001);
