@@ -5,18 +5,33 @@
 // http://dev.test/curlable.php?client=jupiter
 // http://dev.test/curlable.php?client=chronus
 
-var express = require('express')
+var express = require('express'),
+    _ = require('lodash'),
+    moment = require('moment')
+
 const app = express()
 var util = require('./lib/util')
 
 // suppress output to text file
 // util.suppressOutputToLogFile = true
 
-/**
- * set this to -1 for unlimited iterations
- * @type {Number}
- */
-var iterations = -1
+var config = {
+  /**
+   * set this to -1 for unlimited iterations
+   * @type {Number}
+   */
+  iterations: -1,
+  delay: 1000,
+  expressPort: 3001,
+
+  /**
+   * in seconds before a runner expires
+   * @type {Number}
+   */
+  expiration: 60,
+}
+
+var iterations = config.iterations
 var counter    = 0
 
 /**
@@ -24,6 +39,10 @@ var counter    = 0
  * don't run it until it vanishes from this array
  * @type {Array}
  */
+// runningObj = {
+//   name: "http-staging-imv2-nmsloop-com-panel-routine-unmap_conversations_from_offline_users",
+//   expires: "2017-09-07 14:03:00"
+// }
 var running  = []
 var iterator = setInterval(function(){
   counter ++
@@ -37,30 +56,72 @@ var iterator = setInterval(function(){
   if(actions.length > 0){
     for(var aIndex in actions){
       var action = actions[aIndex]
-
-      // util.log(["calling", action.name, action.url])
       
-      var runningIndex = running.indexOf(action.name)
+      var runningIndex = helper.findRunning(action.name)
 
       if(runningIndex === -1){
         util.log(["call", action.name])
-        running.push(action.name)
+
+        helper.addRunning(action.name);
         util.curl(action, function(curledAction){
           util.log(["done", curledAction.name, curledAction.duration + "ms"])
-          running.splice(running.indexOf(curledAction.name), 1)
+          helper.removeRunning(curledAction.name)
         })
       }else{
-        util.log(["skip", action.name])
+        util.log(["skip", action.name, moment().diff(running[runningIndex].added, 'ms') + "ms*"])
+        helper.tryRemoveRunningExpired(action.name)
       }
     }
   }else{
     util.log("no actions")
   }
 
-}, 1000)
+}, config.delay)
 
-app.get('/', (request, response) => {  
-  response.send(running);
+var helper = {
+  findRunning: function(name){
+    return _.findIndex(running, function(i){
+      return i.name.localeCompare(name) === 0
+    })
+  },
+  removeRunning: function(name){
+    running.splice(helper.findRunning(name), 1)
+  },
+  tryRemoveRunningExpired: function(name){
+    var index = helper.findRunning(name)
+
+    var item = running[index]
+
+    var difference = item.expires.diff(moment(), 's')
+
+    if(difference <= 0){
+      running.splice(helper.findRunning(name), 1)
+      util.log(["expired", name])
+    }
+
+    // running.splice(helper.findRunning(name), 1)
+  },
+  addRunning: function(name){
+    var added = moment()
+    var expires = moment().add(config.expiration, 's')
+
+    running.push({
+      name: name,
+      added: added,
+      expires: expires
+    })
+  }
+}
+
+app.get('/', (request, response) => {
+  _.each(running, function(i){
+    i.elapsed = moment().diff(i.added, 's')
+  })
+
+  response.send({
+    now: moment().format(),
+    running: running
+  })
 })
 
-app.listen(3001);
+app.listen(config.expressPort)
